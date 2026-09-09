@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Boutique Mariam — Mode & essentiels, livrés chez vous</title>
+<meta name="description" content="Boutique Mariam : robes, ensembles, sacs et accessoires. Commande simple par WhatsApp, paiement à la livraison.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header id="site-header"></header>
+
+<main>
+  <section class="hero container">
+    <div class="hero__eyebrow">Nouvelle collection</div>
+    <span class="free-delivery-badge">🚚 Livraison gratuite sur toutes les commandes</span>
+    <h1>Mode & essentiels, livrés chez vous</h1>
+    <p>Parcourez la collection, ajoutez au panier, et confirmez votre commande en un message WhatsApp. Paiement à la livraison, partout où nous livrons.</p>
+    <div class="hero__cta">
+      <a href="#produits" class="btn btn-primary">Voir la collection</a>
+    </div>
+  </section>
+
+  <section class="container" id="produits">
+    <div class="section-title">
+      <h2>Notre collection</h2>
+    </div>
+    <div id="product-grid" class="product-grid" aria-live="polite"></div>
+  </section>
+
+  <section class="container reviews-section" id="avis" aria-labelledby="avis-title">
+    <div class="section-title">
+      <h2 id="avis-title">Elles nous font confiance</h2>
+    </div>
+    <div id="reviews-grid" class="reviews-grid"></div>
+  </section>
+</main>
+
+<footer id="site-footer"></footer>
+<div id="whatsapp-float"></div>
+
+<script src="js/config.js"></script>
+<script src="js/products.js"></script>
+<script src="js/reviews.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/order.js"></script>
+<script src="js/pixel.js"></script>
+<script src="js/common.js"></script>
+<script src="js/render-home.js"></script>
+<script src="js/render-reviews.js"></script>
+</body>
+</html>

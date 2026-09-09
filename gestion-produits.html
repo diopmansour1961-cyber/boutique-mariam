@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111">
+<title>Gestion produits — Boutique Mariam</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f7f4ed;color:#211f1b;font-family:Arial,sans-serif}.wrap{max-width:760px;margin:auto;padding:18px 14px 50px}h1{font-size:25px;margin:8px 0}.intro{color:#665f54;line-height:1.5}.card{background:#fff;border:1px solid #e5dfd4;border-radius:18px;padding:16px;margin:14px 0;box-shadow:0 4px 18px #0000000b}label{font-weight:700;display:block;margin:12px 0 6px}input,textarea,select{width:100%;padding:13px;border:1px solid #d7d0c4;border-radius:12px;font-size:16px;background:#fff}textarea{min-height:100px}.btn{border:0;border-radius:12px;padding:13px 15px;font-weight:700;font-size:15px;cursor:pointer}.primary{background:#171717;color:#fff}.secondary{background:#eee9df}.danger{background:#f8dddd;color:#8a2020}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}.media{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:9px}.item{border:1px solid #ddd6ca;border-radius:12px;overflow:hidden;background:#faf8f3}.item img,.item video{width:100%;height:120px;display:block;object-fit:cover}.item span{display:block;padding:7px;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.row{display:flex;gap:10px;align-items:center;border:1px solid #e4ddd2;border-radius:12px;padding:9px;margin:8px 0}.row img{width:55px;height:65px;object-fit:cover;border-radius:8px;background:#eee}.grow{flex:1;min-width:0}.small{font-size:13px;color:#6d665b}.status{padding:11px;border-radius:10px;background:#f0eadf;margin-top:12px;line-height:1.45}.hidden{display:none}@media(max-width:430px){.media{grid-template-columns:repeat(2,1fr)}.item img,.item video{height:110px}.row{align-items:flex-start}.row .actions{margin-top:0}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>📦 Gestion des produits</h1>
+<p class="intro">Ajoute ou modifie tes produits directement depuis Chrome sur ton téléphone. <b>Aucun accès spécial aux dossiers n'est nécessaire.</b><br><b>Important :</b> après avoir enregistré, télécharge <code>products.js</code> et remplace celui de la boutique pour publier les nouvelles photos.</p>
+<div class="card">
+<h2>1. Ajouter / modifier</h2>
+<form id="form">
+<input id="id" type="hidden">
+<label>Nom du produit</label><input id="name" required placeholder="Ex. Ensemble Awa">
+<label>Description</label><textarea id="description" required></textarea>
+<label>Prix (FCFA)</label><input id="price" type="number" min="0" required>
+<label>Ancien prix (facultatif)</label><input id="oldPrice" type="number" min="0">
+<label>Stock</label><input id="quantity" type="number" min="0" required>
+<label>Catégorie</label><input id="category" required placeholder="Robes, Ensembles…">
+<label>📸 Photos</label><input id="photos" type="file" accept="image/*" multiple>
+<div id="photoPreview" class="media"></div>
+<label>🎥 Vidéos</label><input id="videos" type="file" accept="video/*" multiple>
+<div id="videoPreview" class="media"></div>
+<div class="actions"><button class="btn primary" type="submit">💾 Enregistrer</button><button class="btn secondary" type="button" id="cancel">Annuler</button></div>
+<div id="status" class="status hidden"></div>
+</form>
+</div>
+<div class="card">
+<h2>2. Publier les modifications</h2>
+<p class="small">Après l'enregistrement, télécharge <b>products.js</b>, puis remplace l'ancien fichier <b>js/products.js</b> de ta boutique par celui-ci.</p>
+<button class="btn primary" id="download">⬇️ Télécharger products.js</button>
+</div>
+<div class="card"><h2>Produits actuels</h2><div id="list"></div></div>
+</div>
+<script src="js/products.js"></script>
+<script>
+let products=PRODUCTS.map(p=>({...p,photos:[...(p.photos||[])],videos:[...(p.videos||[])]}));
+let pickedPhotos=[],pickedVideos=[];
+const $=id=>document.getElementById(id);
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function fileData(file){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(file);});}
+function preview(files,target,video){target.innerHTML='';Array.from(files).forEach(f=>{const box=document.createElement('div');box.className='item';const el=document.createElement(video?'video':'img');el.src=URL.createObjectURL(f);if(video){el.muted=true;el.playsInline=true}box.appendChild(el);const s=document.createElement('span');s.textContent=f.name;box.appendChild(s);target.appendChild(box);});}
+$('photos').onchange=e=>{pickedPhotos=[...e.target.files];preview(pickedPhotos,$('photoPreview'),false)};
+$('videos').onchange=e=>{pickedVideos=[...e.target.files];preview(pickedVideos,$('videoPreview'),true)};
+function render(){ $('list').innerHTML=products.map(p=>`<div class="row"><img src="${esc(p.photos?.[0]||'')}" onerror="this.style.opacity=.3"><div class="grow"><b>${esc(p.name)}</b><div class="small">${esc(p.id)} · ${p.price} FCFA · Stock ${p.quantity}</div></div><div class="actions"><button class="btn secondary" onclick="edit('${p.id}')">✏️</button><button class="btn danger" onclick="del('${p.id}')">🗑️</button></div></div>`).join('')||'<p class="small">Aucun produit.</p>'; }
+function reset(){ $('form').reset();$('id').value='';pickedPhotos=[];pickedVideos=[];$('photoPreview').innerHTML='';$('videoPreview').innerHTML='';$('status').className='status hidden'; }
+window.edit=id=>{const p=products.find(x=>x.id===id);if(!p)return;$('id').value=p.id;$('name').value=p.name;$('description').value=p.description;$('price').value=p.price;$('oldPrice').value=p.oldPrice??'';$('quantity').value=p.quantity;$('category').value=p.category||'';pickedPhotos=[];pickedVideos=[];$('photos').value='';$('videos').value='';$('photoPreview').innerHTML=(p.photos||[]).map((src,i)=>`<div class="item"><img src="${src}"><span>Photo ${i+1}</span></div>`).join('');$('videoPreview').innerHTML=(p.videos||[]).map((src,i)=>`<div class="item"><video src="${src}" controls playsinline></video><span>Vidéo ${i+1}</span></div>`).join('');$('status').className='status';$('status').textContent='Modification de '+p.name+'. Sélectionner de nouvelles photos/vidéos les remplacera.';scrollTo({top:0,behavior:'smooth'});};
+window.del=id=>{if(confirm('Supprimer ce produit ?')){products=products.filter(p=>p.id!==id);render();}};
+$('cancel').onclick=reset;
+$('form').onsubmit=async e=>{e.preventDefault();let id=$('id').value||'BM-P'+String(Math.max(0,...products.map(p=>Number(String(p.id).match(/(\d+)$/)?.[1]||0)))+1).padStart(3,'0');let p=products.find(x=>x.id===id);if(!p){p={id,photos:[],videos:[]};products.push(p);}p.name=$('name').value.trim();p.description=$('description').value.trim();p.price=Number($('price').value)||0;p.oldPrice=$('oldPrice').value?Number($('oldPrice').value):null;p.quantity=Math.max(0,Number($('quantity').value)||0);p.category=$('category').value.trim();try{if(pickedPhotos.length)p.photos=await Promise.all(pickedPhotos.map(fileData));if(pickedVideos.length)p.videos=await Promise.all(pickedVideos.map(fileData));render();$('status').className='status';$('status').textContent='✓ Produit enregistré. Appuie maintenant sur « Télécharger products.js » pour récupérer le catalogue mis à jour.';pickedPhotos=[];pickedVideos=[];$('photos').value='';$('videos').value='';$('photoPreview').innerHTML='';$('videoPreview').innerHTML='';}catch(err){$('status').className='status';$('status').textContent='⚠️ Erreur pendant la lecture du fichier. Réessaie avec une image/vidéo plus petite.';}};
+$('download').onclick=()=>{const text=`/** Catalogue produits — Boutique Mariam */\nconst PRODUCTS = ${JSON.stringify(products,null,2)};\nfunction findProduct(id){return PRODUCTS.find(p=>p.id===id);}\nfunction placeholderImage(width,height,label){const s=(label||'Photo manquante').replace(/&/g,'&amp;').replace(/</g,'&lt;');const svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+width+'" height="'+height+'"><rect width="100%" height="100%" fill="#EFE9DA"/><text x="50%" y="50%" font-family="sans-serif" font-size="'+Math.max(10,Math.floor(width/14))+'" fill="#5B5346" text-anchor="middle" dominant-baseline="middle">'+s+'</text></svg>';return 'data:image/svg+xml;base64,'+btoa(unescape(encodeURIComponent(svg)));}\nif(typeof module!=='undefined'&&module.exports){module.exports=PRODUCTS;module.exports.findProduct=findProduct;module.exports.placeholderImage=placeholderImage;}\n`;const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:'text/javascript'}));a.download='products.js';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500);};
+render();
+</script>
+</body></html>
