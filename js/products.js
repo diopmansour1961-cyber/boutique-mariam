@@ -80,8 +80,23 @@ const PRODUCTS = [
     ],
     quantity: 0,
     category: "Accessoires"
+  },
+  {
+    id: "BM-P005",
+    name: "Nouveau produit",
+    description: "Description à modifier plus tard.",
+    price: 10000,
+    oldPrice: null,
+    photos: [
+      "assets/products/BM-P005-1.jpg"
+    ],
+    videos: [],
+    quantity: 5,
+    category: "Accessoires"
   }
 ];
+
+
 
 /** Retrouve un produit du catalogue à partir de son id. Retourne undefined si introuvable. */
 function findProduct(id) {
